@@ -1,0 +1,4 @@
+/webstats/
+/whmcs.php
+/whmcs/downloads/dz.php
+/wp-admin

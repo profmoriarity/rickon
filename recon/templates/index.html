@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+
+{% block scripts %}
+<script></script>
+{% endblock %}
+
+{% block content %}
+            <div class="card-list ">
+                    <div class="row ">
+                        <div class="col-12 col-md-6">
+                            <div class="card green ">
+                                <div class="title ">All Targets</div>
+                                <i class="zmdi zmdi-upload "></i>
+                                <div class="value ">{{ proj_dict['p_completed'] +proj_dict['p_inprogress']+proj_dict['p_failed'] }}</div>
+                                <div class="stat ">
+                                    <b>{{ proj_dict['p_completed'] }}</b> Completed
+                                    <br />
+                                    <b>{{ proj_dict['p_inprogress'] }}</b> In progress
+                                    <br />
+                                    <b>{{ proj_dict['p_failed'] }}</b> Failed
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 ">
+                            <div class="card red ">
+                                <div class="title ">Subdomains</div>
+                                <i class="zmdi zmdi-upload "></i>
+                                <div class="value ">{{ proj_dict['total_domains'] }}</div>
+                                <div class="stat ">
+                                    <b>{{proj_dict['subs_alive'] }}</b> Live Web
+                                    <br />
+                                    <b>-</b> -
+                                    <br />
+                                    <b>-</b> -
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                      
+                      
+
+                    </div>
+                </div>
+                <div class="projects mb-4 ">
+                    <div class="projects-inner ">
+                        <header class="projects-header ">
+                            <div class="title ">All Projects</div>
+                            <div class="count ">| {{ proj_dict['p_completed'] +proj_dict['p_inprogress']+proj_dict['p_failed'] }} Projects</div>
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <table class="projects-table ">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Scan Time</th>
+                                    <th>Info</th>
+                                    <th>Scan</th>
+                                    <th>Status</th>
+                                    <th class="text-right ">Actions</th>
+                                </tr>
+                            </thead>
+                {% for projectitem in jsondata %}
+                            <tr>
+                                <td>
+                                    <p>{{ projectitem.domain }}</p>
+                                    <p>{{ projectitem.description }}</p>
+                                </td>
+                                <td>
+                                    <p>{{ projectitem.scan_start | int | date }}</p>
+                                    <p></p>
+                                   <!-- <p class="text-danger ">Overdue</p> -->
+                                </td>
+                                <td class="member ">
+                                    <figure>
+                                        <img src="https://ui-avatars.com/api/?name={{ projectitem['domain'] }}" />
+                                    </figure>
+                                    <div class="member-info ">
+                                        <p>Subdomains: {{ projectitem.subdomains }}</p>
+                                        <p>Alive: {{ projectitem.subdomains_alive }} </p>
+                                        <p>-: -</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p>{{ projectitem.summary_string | perc }} %</p>
+                                    <p>-</p>
+                                </td>
+                                <td class="status ">
+                                    {% if projectitem.status == True %}
+                                     <span class="status-text status-blue ">Completed</span>
+                                    {% endif %}
+                                    {% if projectitem.status == False %}
+                                     <span class="status-text status-orange ">In Progress</span>
+                                    {% endif %}
+                                    {% if projectitem.status == '' %}
+                                     <span class="status-text status-red ">Failed</span>
+                                    {% endif %}
+                                   
+                                    
+                                </td>
+                                <td>
+                                   
+                                
+                                     <div class="btn-group">
+  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+   Choose
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" target="_blank" href="/details/{{ projectitem.id }}">View details</a>
+    <a class="dropdown-item" target="_blank" href="/nuclei_scan/{{ projectitem.id }}">Nuclei Scan</a>
+    <a class="dropdown-item" target="_blank" href="/content_scan/{{ projectitem.id }}">Fuzzer</a>
+  </div>
+</div>
+                                 
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </table>
+                    </div>
+                </div>
+
+{% endblock %}

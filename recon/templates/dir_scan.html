@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="projects mb-4 " style="height: 800px;">
+                    <div class="projects-inner ">
+                        <header class="projects-header ">
+                            <div class="title ">Content Discovery</div>
+                            <div class="count "></div>
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <div class="container">  
+                        <form method="post" action="/content_scan/{{ p.id}}">                      
+                            <label class="form-label">Domain</label>
+                            <h2 style="color:white">{{ p.domain }} </h2>
+                            <label class="form-label">Subdomains</label>
+                            <h2 style="color:white">{{ p.subdomains_alive }} </h2>
+                            <label>Select scan to see result</label><br>
+                            <input type="hidden" name="id" value="{{ p.id }}" />
+                                 <select name="wl"  class="form-control form-control-sm selectscans">
+                                     <option>Small a scan output</option>
+                                     {% for word in wordlists %}
+                                     <option>{{ word }}</option>
+                                     {% endfor %}
+                                    </select>
+
+                        <br/>
+                                     <select name="tool" class="form-control form-control-sm selectscans">
+                                     <option>Select tool to scan</option>
+                                     <option>ffuf</option>
+                                     <option>gobuster</option>
+                                    
+                                    </select>
+
+                        <br/>
+
+
+                            <button type="button" onclick="submit()" class="btn btn-info">Initate Scan</button>
+                           </form> 
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                </div>
+{% endblock %}

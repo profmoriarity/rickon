@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}  <div class="projects mb-4 " style="height: 800px;">
+
+                    <div class="projects-inner ">
+
+                        <header class="projects-header ">
+                            <div class="title ">Configurator</div>
+                            <div class="count "></div>
+                            <i class="zmdi zmdi-code-setting"></i>
+                        </header>
+                        <div class="container">
+                            <form action="/config" method="POST" enctype="multipart/form-data">
+                              <div class="white" style="color:white;">Add wordlist file</div>
+                            <br />
+                  
+                            <label class="form-label">File name</label>
+                            <input class="form-control form-control-dark w-100" type="text" name="file_name" placeholder="target.com-directories-custom.txt" aria-label="Search">
+                             <input type="hidden" name="action" value="wordlist_upload" />
+                            <br />
+                            <label class="form-label">Select a file( only .*txt)</label>
+
+                            <input class="form-control form-control-dark w-100" type="file" name="txt_file" >
+                            <br />
+                             <button type="submit" onclick="submit()"  class="btn btn-info">Add Wordlist</button>
+                         </form>
+                         <br/>
+                         <hr style="background: white">
+
+                                    <form action="/config" method="POST" enctype="multipart/form-data">
+                              <div class="white" style="color:white;">Add nuclei template</div>
+                                  <br>
+                
+                            <label class="form-label">File name</label>
+                            <input class="form-control form-control-dark w-100" name="file_name" type="text" placeholder="CVE-2020-1503.yaml">
+                             <input type="hidden" name="action" value="template_upload" />
+                            <br />
+                            <label class="form-label">Select a file( only *.yaml)</label>
+
+                            <input class="form-control form-control-dark w-100" type="file" name="yaml_file"  aria-label="Search">
+                            <br />
+                             <button type="button" onclick="submit()"  class="btn btn-info">Add Template</button>
+                         </form>
+                         <br>
+                         <form action="/config" method="POST" enctype="multipart/form-data">
+                             <input type="hidden" name="action" value="update" />
+                             <button type="button" onclick="submit()"  class="btn btn-primary" value="updateall">Update all</button>
+                         </form>
+                         <br/>
+                         <hr style="background: white">
+
+
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                </div>
+
+{% endblock %}

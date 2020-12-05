@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script>
+function load_nuclei_results(id){
+  $("[class^='severity-']").hide()
+  cls = id.toLowerCase()
+  if( cls == 'all'){
+     $("[class^='severity-']").show()
+  } else {
+     $(".severity-"+cls).show()
+  }
+
+}
+</script>
+{% endblock %}
+{% block content %}
+  <div class="projects mb-4 " style="height: 800px;">
+                    <div class="projects-inner ">
+                        <header class="projects-header ">
+                            <div class="title ">Nuclei Scanner</div>
+                            <div class="count "></div>
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <div class="container">
+                            <form method="post">
+                            <label style="color: white">Select scan to see result</label><br>
+
+                            {% if all == True %} 
+                                  <select name="project"  class="form-control form-control-sm selectscans">
+                                     <option>Select project(s)</option>
+                                      <option>All Projects</option>
+                                     {% for p in all_projects %}
+                                     <option>{{ p.id }} -{{ p.scan_complete | timeago }} - {{ p.description }} :{{ p.id }}</option>
+                                     {% endfor %}
+                                   </select>
+
+                            {% endif %}
+                            <br>
+                                 <select name="template"  class="form-control form-control-sm selectscans">
+                                     <option>Select template(s)</option>
+                                      <option>All Templates</option>
+                                      <option>Unscanned templates Only</option>
+                                     {% for word in wordlists %}
+                                     <option>{{ word }}</option>
+                                     {% endfor %}
+                                  </select>
+                             <br/>
+                            <button type="button" onclick="submit()" class="btn btn-info">Scan</button>
+                           </form> 
+
+                        <hr style="background:white">
+                        {% if all == False %} 
+                        {% if scannable != [] %}
+                           <h3 style="color: white">Following templates are not scanned on this target</h3>
+                        {% endif %}
+                             <p>{% for template in scannable %}
+                         <span class="badge badge-info">{{ template }}</span>
+                           {% endfor %}</p>
+                           {% endif %}
+                        </div>
+                        <br />
+                        <br />
+                        <div class="container">
+                          {% if all == False %} 
+                          <p style="color:white">All scan results</p><br>
+           <select oninput="load_nuclei_results(this.value)" class="form-control form-control-sm nucleiscans">
+  <option>All</option>
+  <option>Info</option>
+   <option>Low</option>
+    <option>Medium</option>
+     <option>High</option>
+      <option>Critical</option>
+</select>
+    <br />
+
+
+  <table class="projects-table nuclei-result">
+                            <thead>
+                                <tr>
+                                    <th>Template</th>
+                                    <th>Type</th>
+                                    <th>Matched</th>
+                                    <th>Value</th>
+                                    <th>Severity</th>
+                                     <th>Description</th>
+
+                                </tr>
+                            </thead>
+                            {% for x in nuclei_out %}
+                           <tr class="severity-{{ x['severity']}}">
+                                <td>
+                                    <p> {{ x['template'] }}</p>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>
+                                      <a target="_blank" style="color:white"  href="#">{{ x['type']}}</a>
+                                    </p>
+                                    <p></p>
+                                </td>
+                                <td class="member ">
+                                    <div class="member-info ">
+                                        <p>{{ x['matched'] }}</p>
+                                        <p></p>
+
+                                    </div>
+                                </td>
+                                <td>
+                                 {{ x['matcher_name']}}
+                                </td>
+
+                                <td>
+                                   <a href="">{{ x['severity'] }}</a>
+                                       </td>
+                                        <td>
+                                  <p>{{ x['description'] }}</p>
+                                  <p></p>
+                                       </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                          {% endif %}
+                        <br />
+                        <br />
+                        <br />
+                    </div>
+                    </div>
+                </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+<script>
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+setTimeout(function(){
+
+target = getParameterByName('target', location.href)
+if(target != null){
+  $('.target').val(target)
+}
+
+
+}, 100);
+
+
+
+
+</script>
+
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="projects mb-4 " style="height: 800px;">
+                    <div class="projects-inner">
+                        <header class="projects-header ">
+                            <div class="title ">Content Scanner</div>
+                            <div class="count "></div>
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <div class="container">
+                            <form method="post" action="/dir_scanner/all/">
+                            <label style="color: white">Setup options</label><br>
+
+                     <label class="form-label">Target</label>
+                            <input class="form-control form-control-dark w-100 target" type="text" name="target" placeholder="https://staging.hackerone.com/" aria-label="Search">
+
+                               <label class="form-label">Threads</label>
+                            <input class="form-control form-control-dark w-100" type="text" value="100" name="threads" placeholder="hackerone.com" aria-label="Search">
+
+                               <label class="form-label">Extensions<small> (leave blank if directory scan)</small></label>
+                            <input class="form-control form-control-dark w-100" type="text" name="extensions" placeholder="php,txt,sql,aspx" aria-label="Search">
+                            <br>
+
+                                 <select name="wordlist"  class="form-control form-control-sm">
+                                     <option>Select wordlist</option>
+                                     {% for word in wordlists %}
+                                      <option>{{ word }}</option>
+                                      {% endfor %}
+                                  </select>
+                             <br/>
+                         <select name="tool"  class="form-control form-control-sm">
+                                     <option>Select tool</option>
+                                     <option>ffuf</option>
+                                     <option>gobuster</option>
+                                  </select>
+                             <br/>
+                            <button type="button" onclick="submit()" class="btn btn-info">Scan</button>
+                           </form> 
+
+                        <hr style="background:white">
+                      
+                        </div>
+                        <br />
+                        <br />
+                        <div class="container">
+                     
+                        <br />
+                        <br />
+                        <br />
+                    </div>
+                    </div>
+                </div>
+{% endblock %}

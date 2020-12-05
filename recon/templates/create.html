@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="projects mb-4 " style="height: 800px;">
+                    <div class="projects-inner ">
+                        <header class="projects-header ">
+                            <div class="title ">Scan new project</div>
+                            <div class="count "></div>
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <div class="container">  
+                        <form method="post" action="/create">                      
+                            <label class="form-label">Domain</label>
+                            <input class="form-control form-control-dark w-100" type="text" name="domain" placeholder="hackerone.com" aria-label="Search">
+                            <br />
+                            <label class="form-label">Description</label>
+                            <textarea  class="form-control form-control-dark w-100" name="description" placeholder="Hackers to hack"
+                                cols="30" rows="5"></textarea>
+                            <br />
+                            <button type="button" onclick="submit()" class="btn btn-info">Initate Scan</button>
+                           </form> 
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                </div>
+{% endblock %}

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" type="image/png" href="https://static.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+    <link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico"
+    />
+    <link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg"
+        color="#111" />
+    <title>Recon Management Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,600" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/jquery.selectric/1.10.1/selectric.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <link rel="stylesheet" type="text/css" href="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.css">
+    <link rel="stylesheet"
+      href="https://rawcdn.githack.com/highlightjs/cdn-release/b9179c9d09dfae05d16facd5e8be2844574c340e/build/styles/atelier-heath-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/highlight.min.js"></script>
+    <style>
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
+    <script>
+        window.console = window.console || function (t) { };
+    </script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <script>
+
+
+
+
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
+function showMenu(){
+    if($(".nope").css('display') == 'none')
+        $(".nope").show();
+    else
+         $(".nope").hide();
+}
+
+function setCookie(cname, cvalue) {
+  var d = new Date();
+  d.setTime(d.getTime() + (0.5*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+
+function onloadExecute(){
+    get_recent()
+    if( getCookie('message_status') == 'unread') {
+        swal("Project Created", getCookie('message') , "success");
+        setCookie('message_status','read')
+    }
+         
+}
+
+
+function get_recent(){
+    str = ''
+$.get('/getrecent',function(data){
+    for(i = 0; i < data.length ; i++ ) {
+         str = str + `<li class="nav-item ">
+                            <a class="nav-link " href="/details/${data[i].id}">
+                                <i class="zmdi zmdi-file-text "></i>
+                                ${data[i].domain}
+                            </a>
+                        </li>`
+    }
+ $('.recent_pro').html(str)
+});
+}
+
+
+
+    </script>
+
+
+    {% block scripts %}
+    {% endblock %}
+
+</head>
+
+<body translate="no" onload="onloadExecute()">
+    <nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0">
+
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">
+         <button class="navbar-toggler d-lg-none btn btn-sm" onclick="showMenu()" type="button">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+Quasar</a>
+        <input class="form-control form-control-dark w-100" type="text" placeholder="Search Project" aria-label="Search">
+        
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 nope d-md-block sidebar" style="display: none">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/create">
+                                <i class="zmdi zmdi-widgets"></i>
+                                Add New Project
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="zmdi zmdi-view-day"></i>
+                                All Projects
+                            </a>
+                        </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="/config">
+                                <i class="zmdi zmdi-view-day"></i>
+                                Configurator
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nuclei_scan/all/">
+                                <i class="zmdi zmdi-view-day"></i>
+                                Nuclei Scanner
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link" href="/dir_scanner/all/">
+                                <i class="zmdi zmdi-view-day"></i>
+                                File discovery
+                            </a>
+                        </li>
+                    </ul>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center pl-3 mt-4 mb-1 text-muted ">
+                        <span>Recent Projects</span>
+                        <a class="d-flex align-items-center text-muted " href="/create">
+                            <i class="zmdi zmdi-plus-circle-o "></i>
+                        </a>
+                    </h6>
+                    <ul class="nav flex-column mb-2 ">
+                  <div class="recent_pro"></div>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main " class="col-md-9 ml-sm-auto col-lg-10 my-3 ">
+
+              {% block content %}
+              {% endblock %}
+
+            </main>
+        </div>
+    </div>
+   
+    <script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-157cd5b220a5c80d4ff8e0e70ac069bffd87a61252088146915e8726e5d9f147.js "></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/jquery.selectric/1.10.1/jquery.selectric.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js'></script>
+    <script id="rendered-js " src="{{ url_for('static', filename = 'js/custom.js') }} ">  </script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+     <script src="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
+</body>
+
+</html>

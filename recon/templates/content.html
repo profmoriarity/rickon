@@ -1,0 +1,795 @@
+{% extends "base.html" %}
+
+
+{% block scripts %}
+<script>
+    function openModal() {
+  document.getElementById("myModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("myModal").style.display = "none";
+}
+
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("demo");
+  var captionText = document.getElementById("caption");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " active";
+  captionText.innerHTML = dots[slideIndex-1].alt;
+}
+
+function ffuf_results(id){
+  $.get('/dir_scan/'+id+'/ffuf',function(data){
+    console.log(data)
+    str = ' <option>Small a scan output</option>'
+    data.forEach((x) => {
+      str = str + "<option>"+x+"</option>"
+    })
+    $('.selectscans').html(str)
+  })
+}
+
+function load_nuclei_results(id){
+  $("[class^='severity-']").hide()
+  cls = id.toLowerCase()
+  if( cls == 'all'){
+     $("[class^='severity-']").show()
+  } else {
+     $(".severity-"+cls).show()
+  }
+
+}
+
+function load_scan_results(id,name){
+  str = ''
+  $.get('/get_scan/'+id+'/'+name, function(data){
+    console.log(data)
+    data.forEach((val) => {
+       str = str + ` <tr class="status-${ val['status_code'] }">
+                                <td>
+                                    <p> ${ val['url'] }</p>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>
+                                      <a target="_blank" style="color:white"  href="${ val['url'] }">${ val['FUZZ']}</a>
+                                    </p>
+                                    <p></p>
+                                </td>
+                                <td class="member ">
+                                    <div class="member-info ">
+                                        <p>${ val['status_code']}</p>
+                                        <p></p>
+
+                                    </div>
+                                </td>
+                                <td>
+                                   ${ val['content_length'] }
+                                </td>
+
+                                <td>
+                                   <a href="">${ val['redirectlocation'] }</a>
+                                       </td>
+                            </tr>`
+    })
+
+    $('.tbody-scan').html(str)
+  })
+ 
+}
+
+
+function htmlEntities(str) {
+    str = String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    str = str.replace('&lt;mark&gt;','<mark>')
+    str = str.replace('&lt;/mark&gt;','</mark>')
+    return str
+}
+
+var selectedpage = 0;
+
+function waybackurls(id,page) {
+   str = ''
+
+   offset  = $('.numberofresults').val()
+   for (i = 1; i <6; i++) {
+    $(".l"+i).text(parseInt(page)+i)
+   }
+  $.get('/waybackurls/'+id+"?page="+page+"&offset="+offset, function(data){
+    console.log(data)
+    data = JSON.parse(data)
+    selectedpage = page
+    data.forEach((val) => {
+       str = str + ` <tr class="status-${ val['status-code'] }">
+                                <td>
+                                    <p>
+                                      ${ val['status-code']}
+                                    </p>
+                                    <p></p>
+                                   
+                                </td>
+                                <td class="member ">
+                                  <p>${ val['content-length']}</p>
+                                   <p></p>
+                                </td>
+                                <td>
+                                  
+                                    <p>  ${ val['title'] } </p>
+                                     <p></p>
+                                </td>
+                                 <td>
+                                    <p> ${ val['url'] }</p>
+                                     <p></p>
+                                </td>
+                            </tr>`
+    })
+
+    $('.wburls').html(str)
+     filter_scan(document.getElementsByClassName("filter-scan-results")[1].value)
+  })
+}
+
+
+function basicscan(id){
+  $.get('/basic_scan/'+id, function(data){
+   data =  JSON.parse(data)
+   cnames = data['cnames']
+   dalfox  = data['dalfox']
+   str = ''
+   cnames.forEach((x) => {
+    str = str + "<tr><td>"+x[0]+"</td><td>"+x[1]+"</td></tr>"
+   })
+  
+   $('.subtakeovers').html(str)
+    str = ''
+    dalfox.forEach((x) => {
+      str = str + x+"<br>"
+    })
+    $('.dalfoxresults').html(str)
+  })
+}
+
+function searchword(id, type){
+
+  if(type == 'response-output') {
+
+console.log(id)
+
+searchkey = $("#reskey").val()
+
+console.log(searchkey)
+
+$.post('/grep','search_str='+searchkey+'&id='+id+'&above=10&below=10&type=response-output',function(data){
+  str = ''
+  data = JSON.parse(data)
+  for( i = 0; i < data.length; i++){
+    fk = Object.keys(data[i])[0];
+    temp = data[i][fk]
+    strr = temp.join("\r\n")
+    str = str +'<span style="color:white;background:black">>> '+fk+'</span><br><pre><code class="hljs">'+htmlEntities(strr)+'</code></pre><br>'
+  }
+  
+  $('.codefil').html(str)
+  document.querySelectorAll('pre code').forEach((block) => {
+    hljs.highlightBlock(block);
+  });
+
+})
+
+}
+
+
+if(type == 'js-files') {
+
+
+console.log(id)
+
+searchkey = $("#jskey").val()
+
+console.log(searchkey)
+
+$.post('/grep','search_str='+searchkey+'&id='+id+'&above=10&below=10&type=js-beautify',function(data){
+  str = ''
+  data = JSON.parse(data)
+  for( i = 0; i < data.length; i++){
+    fk = Object.keys(data[i])[0];
+    temp = data[i][fk]
+    strr = temp.join("\r\n")
+    str = str +'<span style="color:white;background:black">>> '+fk+'</span><br><pre><code class="hljs">'+htmlEntities(strr)+'</code></pre><br>'
+  }
+  
+  $('.java-codefil').html(str)
+  document.querySelectorAll('pre code').forEach((block) => {
+    hljs.highlightBlock(block);
+  });
+
+})
+
+}
+
+}
+
+
+
+function filter_scan(val){
+      $("[class^='status-']").show()
+      if(val == '404'){}
+      else {
+           arr = val.split(',')
+           arr.forEach((stat) => {
+            $('.status-'+stat).hide()
+           })
+      }
+}
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="projects mb-4 ">
+
+                    <div class="projects-inner ">
+
+              <!-- status -->
+              <div class="card white timeline" style="color: black">
+           <ol class="numbered">
+               <li>Subdomains scan  
+                    {% if 'subdomains_end' in summary %}
+                 &#9989;   <span class="badge badge-secondary">
+ {{ summary['subdomains_end'] | timeago }}
+</span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+              </li>
+                <li>HTTP scan 
+                     {% if 'httpinfo_end' in summary %}
+                     &#9989; <span class="badge badge-secondary">
+ {{ summary['httpinfo_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                </li>
+                <li>Screenshot Scan 
+                    {% if 'screenshot_end' in summary %}
+                    &#9989; <span class="badge badge-secondary">
+ {{ summary['screenshot_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+               </li>
+                 <li>Header scan 
+                      {% if 'headers_end' in summary %}
+                      &#9989; <span class="badge badge-secondary">
+ {{ summary['headers_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                 </span></li>
+                 <li>Http History 
+                      {% if 'httphistory_end' in summary %}
+                      &#9989; <span class="badge badge-secondary">
+ {{ summary['httphistory_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                 </li>
+                  <li>Javascript Analysis 
+                       {% if 'js_end' in summary %}
+                        &#9989;<span class="badge badge-secondary">
+ {{ summary['js_end'] | timeago }}
+ </span>
+ {% else %}
+  &#10060; Nope
+                      {% endif %}
+                  </span></li>
+                <li>Stack Analysis 
+                     {% if 'sa_end' in summary %}
+            &#9989; <span class="badge badge-secondary">
+ {{ summary['sa_end'] | timeago }}
+ </span>
+ {% else %}
+  &#10060;  Nope
+                      {% endif %}
+                </li>
+
+  <li>Basic Scans 
+                      {% if 'basic_end' in summary %}
+                      &#9989; <span class="badge badge-secondary">
+ {{ summary['basic_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                 </li>
+
+
+                   <li>Directoru/file search 
+                      {% if 'dirscan_end' in summary %}
+                      &#9989; <span class="badge badge-secondary">
+ {{ summary['dirscan_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                 </li>
+
+                   <li>Nuclei scan 
+                      {% if 'nuclei_end' in summary %}
+                      &#9989; <span class="badge badge-secondary">
+ {{ summary['nuclei_end'] | timeago }}
+ </span>
+ {% else %}
+ &#10060;  Nope
+                      {% endif %}
+                 </li>
+
+           </ol>
+              </div>
+{% if ('status' in summary) and (summary['status'] == 'completed') %}
+
+
+              <!-- status -->
+                        <header class="projects-header">
+                  <!--       <div class="btn-group dropdown-filter">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Filter by
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+
+                                    <li role="separator" class="divider"></li>
+
+                                    <li class="dropdown-header">Status</li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">301
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">200
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">403
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">500
+                                        </label>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li class="dropdown-header">Content</li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">Unique
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">Small
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox">Big
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div> -->  
+
+
+
+<ul class="nav nav-tabs nav-pills nav-fill tabular" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">HTTP Info</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Screenshots</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#content-disc" role="tab" aria-controls="content-disc" onclick="ffuf_results('{{ result.id }}')" aria-selected="false">Content Discovery</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#nuclei" role="tab" aria-controls="nuclei" aria-selected="false">Nuclei Scan</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#resp-scan" role="tab" aria-controls="resp-scan" aria-selected="false">Response Scan</a>
+  </li>
+   <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#js-scan" role="tab" aria-controls="js-scan" aria-selected="false">Javascript Scan</a>
+  </li>
+   <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#wayback-scan" role="tab" aria-controls="wayback-scan" onclick="waybackurls('{{ result.id }}',0)" aria-selected="false">Wayback Scan</a>
+  </li>
+  <!--
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#basic-scan" role="tab" aria-controls="basic-scan" onclick="basicscan('{{ result.id }}')" aria-selected="false">Basic Scan</a>
+  </li>
+ -->
+
+</ul>
+
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+<!-- HTTP info -->
+
+     <header class="projects-header ">
+                            <div class="title ">{{ result.domain }}</div>
+
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                          <input class="form-control form-control-dark w-100" type="text" placeholder="Search for ports/status codes/title " aria-label="Search"><br />
+     <div class="form-check form-check-inline">
+           <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="headerscheck" value="option1">
+  <label class="form-check-label" for="headerscheck">Headers</label>
+</div>
+    <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="stackcheck" value="option2">
+  <label class="form-check-label" for="stackcheck">Stack</label>
+</div>
+    <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="subdomaincheck" value="option3">
+  <label class="form-check-label" for="subdomaincheck">Subdomain</label>
+</div>
+</div>
+    <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="lengthcheck" value="option4">
+  <label class="form-check-label" for="lengthcheck">Length</label>
+</div>
+    <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="titlecheck" value="option5">
+  <label class="form-check-label" for="titlecheck">Title</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="screenshotcheck" value="option6">
+  <label class="form-check-label" for="screenshotcheck">Screenshots</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="statuscheck" value="option7">
+  <label class="form-check-label" for="statuscheck">Status</label>
+</div>
+  <br /><br />
+                        <table class="projects-table ">
+                            <thead>
+                                <tr>
+                                    <th>Subdomain</th>
+                                    <th>Title</th>
+                                    <th>Actions</th>
+                                    <th>Stack</th>
+                                    <th>Status</th>
+                                    <th>Screenshot</th>
+                                    <th>Size</th>
+                                    <th>Webserver</th>
+
+                                </tr>
+                            </thead>
+                            {% for http in httpdata %}
+                            <tr>
+                                <td>
+                                    <p>{{ http['url'] }}</p>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>
+                                    {{ http['title'] }}
+                                    </p>
+                                    <p></p>
+                                </td>
+                                  <td>
+                                    <p>
+                                  <a class="btn btn-primary btn-sm" target="_blank" href="/dir_scanner/all/?target={{ http['url'] }}">Fuzz</a>
+                                    </p>
+                                    <p></p>
+                                </td>
+                                <td class="member ">
+                                    <div class="member-info ">
+                                      {% if 'stack' in http %}
+                                      {% for app in http['stack'] %}
+                                          <span class="badge badge-pill badge-{{ colors | color }}">{{ app['app']}} {% if app['ver'] != None %} {{ app['ver'] }} {% endif %}</span>
+                                      {% endfor %}
+                                        <p>-</p>
+                                      {% endif %}
+
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ http['status-code']}}
+                                </td>
+
+                                <td>
+                            <!--        <img src="../static/screenshots/{{result.id }}/screenshots/{{ http['url'].replace('://','_').replace(':','_')}}.png" alt="Screenshot unavailble" height="100" width="100" onerror="this.style.display='none'"> -->
+                                </td>
+                                <td>
+                                    <p>{{ http['content-length']}} Bytes</p>
+                                    <p></p>
+                                </td>
+                                 <td>
+                                    <p>{{ http['webserver'] }}</p>
+                                    <p></p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <br />
+                        <br />
+
+                        <!-- HTTP info -->
+
+
+  </div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" style="margin-top: 10px">
+
+<div class="gallery row">
+ {% for x in screenshots %}
+  <div class="column" style="overflow-x: scroll;max-height: 200px;overflow-y: hidden">
+     <center><p><span class="badge badge-light">{{ x.split('/')[-1].replace("_",":").split(".png")[0] }}</span></p></center>
+    <img src="../{{ x }}" style="width:100%;" onclick="openModal();currentSlide({{ screenshots.index(x) }})" class="hover-shadow cursor" onerror="this.src='http://localhost:5000/static/img/404.gif'">
+   
+  </div>
+  {% endfor %}
+</div>
+
+<div id="myModal" class="gallery modal">
+  <span class="close cursor" onclick="closeModal()">&times;</span>
+  <div class="modal-content">
+
+ {% for y in screenshots %}
+
+    <div class="mySlides" style="overflow-x: scroll;max-height: 800px;">
+      <div class="numbertext" style="color:red;background: transparent;font-weight: 900">{{ screenshots.index(y) }} / {{ screenshots.index(screenshots[-1])+1 }} - {{ y.split('/')[-1].replace("_",":").split(".png")[0] }}</div>
+      <img src="../{{ y }}" style="width:100%;" onerror="this.src='http://localhost:5000/static/img/404.gif'">
+    </div>
+{% endfor %}
+    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+    <div class="caption-container">
+      <p id="caption"></p>
+    </div>
+
+  
+  </div>
+</div>
+
+
+
+  </div>
+  <div class="tab-pane fade" id="content-disc" role="tabpanel" aria-labelledby="content-disc-tab">
+      
+
+<!-- HTTP info -->
+
+     <header class="projects-header ">
+                        
+
+                            <i class="zmdi zmdi-download "></i>
+                        </header>
+                        <label>Filter status code below</label><br>
+                         <input type="text" class="filter-scan-results" onchange="filter_scan(this.value)" style="font-color: black" value="404" data-role="tagsinput" />
+<br><hr>
+                           <label>Select scan to see result</label><br>
+                     <select oninput="load_scan_results('{{ result.id }}',this.value)" class="form-control form-control-sm selectscans">
+ <option>Small a scan output</option>
+</select>
+
+         <br>
+         <button type="button" onclick="window.open('/content_scan/{{ result.id }}')" class="btn btn-primary">
+Start New scan&nbsp;<i class="zmdi zmdi-input-power"></i></button>
+
+  <br /><br />
+                        <table class="projects-table ffuf-result">
+                            <thead>
+                                <tr>
+                                    <th>Host</th>
+                                    <th>Path</th>
+                                    <th>Status Code</th>
+                                    <th>Length</th>
+                                    <th>Redirect</th>
+
+                                </tr>
+                            </thead>
+                           <tbody class="tbody-scan"></tbody>
+                        </table>
+                        <br />
+                        <br />
+
+                        <!-- HTTP info -->
+
+
+  </div>
+  <div class="tab-pane fade" id="nuclei" role="tabpanel" aria-labelledby="nuclei-tab">
+    <!-- nuclei content here --> 
+    <br />
+
+    <button class="btn btn-primary" onclick="window.open('/nuclei_scan/{{ result.id }}')">New Scan</button>
+
+    <br />
+<br />
+           <select oninput="load_nuclei_results(this.value)" class="form-control form-control-sm nucleiscans">
+  <option>All</option>
+  <option>Info</option>
+   <option>Low</option>
+    <option>Medium</option>
+     <option>High</option>
+      <option>Critical</option>
+</select>
+    <br />
+
+
+  <table class="projects-table nuclei-result">
+                            <thead>
+                                <tr>
+                                    <th>Template</th>
+                                    <th>Type</th>
+                                    <th>Matched</th>
+                                    <th>Value</th>
+                                    <th>Severity</th>
+                                     <th>Description</th>
+
+                                </tr>
+                            </thead>
+                            {% for x in nuclei_out %}
+                           <tr class="severity-{{ x['severity']}}">
+                                <td>
+                                    <p> {{ x['template'] }}</p>
+                                    <p></p>
+                                </td>
+                                <td>
+                                    <p>
+                                      <a target="_blank" style="color:white"  href="#">{{ x['type']}}</a>
+                                    </p>
+                                    <p></p>
+                                </td>
+                                <td class="member ">
+                                    <div class="member-info ">
+                                        <p>{{ x['matched'] }}</p>
+                                        <p></p>
+
+                                    </div>
+                                </td>
+                                <td>
+                                 {{ x['matcher_name']}}
+                                </td>
+
+                                <td>
+                                   <a href="">{{ x['severity'] }}</a>
+                                       </td>
+                                        <td>
+                                  <p>{{ x['description'] }}</p>
+                                  <p></p>
+                                       </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <br />
+                        <br />
+
+    <!-- nuclei content here -->
+  </div>
+  <div class="tab-pane fade" id="resp-scan" role="tabpanel" aria-labelledby="resp-scan-tab">
+    <!-- respoonse scan start -->
+<br />
+
+ <input class="form-control form-control-dark w-100" type="text" id="reskey" placeholder="Start typing a keyword" aria-label="Search"><br />
+<button type="button" class="btn btn-primary" onclick="searchword('{{ result.id }}','response-output')">Search</button>
+
+<hr>
+
+
+<div class="codefil"></div>
+
+    <!-- response scan ends -->
+  </div>
+   <div class="tab-pane fade" id="js-scan" role="tabpanel" aria-labelledby="js-scan-tab">
+    <br>
+     <input class="form-control form-control-dark w-100" type="text" id="jskey" placeholder="Start typing a keyword" aria-label="Search"><br />
+<button type="button" class="btn btn-primary" onclick="searchword('{{ result.id }}','js-files')">Search</button>
+<button type="button" class="btn btn-primary" target="_blank" onclick="window.open('/linkfinder/{{ result.id }}/')">Linkfinder report</button>
+
+<hr>
+    <div class="java-codefil"></div>
+</div>
+
+  <div class="tab-pane fade" id="wayback-scan" role="tabpanel" aria-labelledby="wayback-scan-tab">
+
+   <label>Filter status code below</label><br>
+                         <input type="text" class="filter-scan-results" onchange="filter_scan(this.value)" style="font-color: black" value="404" data-role="tagsinput" />
+                          
+<br><hr>
+ <select  class="form-control form-control-sm numberofresults">
+                                   <option>50</option>
+                                    <option>100</option>
+                                      <option>200</option>
+                            </select>
+    <!-- waybackurls -->
+    <br>
+   <table class="projects-table waybackurls-result">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Length</th>
+                                    <th>Title</th>
+                                    <th>URL</th>
+
+                                </tr>
+                            </thead>
+                           <tbody class="wburls"></tbody>
+                        </table>
+                        <br />
+                        <br />
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link l1" onclick="waybackurls('{{ result.id }}',  this.innerText)" href="#">1</a></li>
+    <li class="page-item"><a class="page-link l2" onclick="waybackurls('{{ result.id }}', this.innerText)" href="#">2</a></li>
+    <li class="page-item"><a class="page-link l3" onclick="waybackurls('{{ result.id }}', this.innerText)" href="#">3</a></li>
+    <li class="page-item"><a class="page-link l4" onclick="waybackurls('{{ result.id }}',  this.innerText)" href="#">4</a></li>
+    <li class="page-item"><a class="page-link l5" onclick="waybackurls('{{ result.id }}',  this.innerText)" href="#">5</a></li>
+  </ul>
+</nav>
+    <!-- waybackurls end -->
+  </div>
+
+<!--
+   <div class="tab-pane fade" id="basic-scan" role="tabpanel" aria-labelledby="basic-scan-tab">
+      
+   <table class="projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Host</th>
+                                    <th>Cname</th>
+                                </tr>
+                            </thead>
+ <tbody class="subtakeovers"></tbody>
+</table>
+   
+
+ <div class="dalfoxresults"></div></pre></code>
+         
+
+
+
+
+   </div>
+
+-->
+ </header>
+
+ {% endif %}
+                   
+                    </div>
+                </div>
+
+{% endblock %}

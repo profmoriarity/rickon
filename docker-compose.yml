@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    links:
+      - redis
+  redis:
+    image: redis
+    ports: 
+      - 7001:6739
+    command: redis-server --requirepass rickon
+  postgres:
+    image: postgres
+    ports: 
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword

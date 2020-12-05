@@ -1,0 +1,6 @@
+{
+	"subdomains": {
+			"binary":"subfinder",
+			"threads":100
+	}
+}

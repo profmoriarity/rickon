@@ -13,3 +13,4 @@ wad==0.4.4
 wappalyze==1.6
 wappalyzer==1.0
 flask_rq2
+flask_script

@@ -12,7 +12,7 @@ from threading import Thread
 import requests
 
 
-REDIS_HOST = os.getenv('redis_host', '139.59.58.6')
+REDIS_HOST = os.getenv('redis_host', '172.105.5.96')
 REDIS_PORT = os.getenv('redis_port', 7001)
 REDIS_PASSWORD = os.getenv('redis_password', 'rickon')
 

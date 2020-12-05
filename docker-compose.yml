@@ -4,13 +4,15 @@ services:
     build: .
     ports:
       - "5000:5000"
-    links:
+    depends_on:
       - redis
+      - postgres
+    command: sh -c "python3 /app/createdb.py; python3 /app/migarte.py db init; python3 /app/migrate.py db migrate; python3 /app/migrate.py db upgrade"
   redis:
     image: redis
     ports: 
-      - 7001:6739
-    command: redis-server --requirepass rickon
+      - 7001:6379
+    command: "redis-server --requirepass rickon"
   postgres:
     image: postgres
     ports: 

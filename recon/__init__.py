@@ -11,10 +11,10 @@ db = SQLAlchemy()
 rq = RQ()
 
 
-REDIS_HOST = os.getenv('redis_host', '139.59.58.6')
+REDIS_HOST = os.getenv('redis_host', '172.105.5.96')
 REDIS_PORT = os.getenv('redis_port', 7001)
 REDIS_PASSWORD = os.getenv('redis_password', 'rickon')
-PSQL_HOST  = os.getenv('psql_host', '139.59.58.6')
+PSQL_HOST  = os.getenv('psql_host', '172.105.5.96')
 PSQL_USER =  os.getenv('psql_user', 'postgres')
 PSQL_PASSWORD =  os.getenv('psql_password', 'mysecretpassword')
 

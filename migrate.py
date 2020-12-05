@@ -1,8 +1,9 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from recon import app, db
+import os
 
-
+os.chdir('/app/recon/')
 
 
 migrate = Migrate(app, db)

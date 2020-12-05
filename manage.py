@@ -6,7 +6,7 @@ import recon
 
 os.chdir('/app/recon')
 
-conn = redis.from_url('redis://:rickon@139.59.58.6:7001')
+conn = redis.from_url('redis://:rickon@172.105.5.96:7001')
 
 listen = ['high']
 

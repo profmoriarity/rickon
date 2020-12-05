@@ -58,7 +58,7 @@ RUN git clone https://github.com/projectdiscovery/nuclei-templates.git /app/nucl
 RUN chmod +x boot.sh
 RUN /app/boot.sh
 RUN chmod +x /app/run.sh
-
+RUN python3 /app/exec.py
 EXPOSE 5000
 ENTRYPOINT [ "/app/run.sh" ] 
 

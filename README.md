@@ -1,4 +1,4 @@
-# rickon
+# 🎉 **Rickon** - Automated Recon Tool 🎉
 
 ## Overview
 
@@ -6,21 +6,21 @@ The **Automated Recon Tool** is a powerful Flask application designed for automa
 
 ## Features
 
-- **Subdomain Discovery**: Automatically finds subdomains of a given domain.
-- **Domain Status Check**: Checks if discovered domains are alive and responsive.
-- **Tag Analysis**: Analyzes HTML tags for security vulnerabilities and insights.
-- **Screenshot Capture**: Takes and stores screenshots of active domains for visual reference.
-- **JavaScript Analysis**: Scans JavaScript files for sensitive information, such as API keys and endpoints.
-- **Search Functionality**: Search through JavaScript dumps for specific terms and view snippets.
-- **Nuclei Integration**: Runs Nuclei for vulnerability scanning on demand and displays results.
-- **FFUF Integration**: Executes FFUF for fuzzing tasks and shows results as per user specifications.
-- **Multi-Project Support**: Add and manage multiple projects for organized reconnaissance.
+- 🕵️‍♂️ **Subdomain Discovery**: Automatically finds subdomains of a given domain.
+- ✅ **Domain Status Check**: Checks if discovered domains are alive and responsive.
+- 🔍 **Tag Analysis**: Analyzes HTML tags for security vulnerabilities and insights.
+- 📸 **Screenshot Capture**: Takes and stores screenshots of active domains for visual reference.
+- 📜 **JavaScript Analysis**: Scans JavaScript files for sensitive information, such as API keys and endpoints.
+- 🔍 **Search Functionality**: Search through JavaScript dumps for specific terms and view snippets.
+- 🛡️ **Nuclei Integration**: Runs Nuclei for vulnerability scanning on demand and displays results.
+- ⚙️ **FFUF Integration**: Executes FFUF for fuzzing tasks and shows results as per user specifications.
+- 📂 **Multi-Project Support**: Add and manage multiple projects for organized reconnaissance.
 
 ## Technologies Used
 
-- **Backend**: Flask
-- **Database**: PostgreSQL
-- **Frontend**: Bootstrap (or any preferred UI framework)
+- 🐍 **Backend**: Flask
+- 🗄️ **Database**: PostgreSQL
+- 🌐 **Frontend**: Bootstrap (or any preferred UI framework)
 
 
 ```
